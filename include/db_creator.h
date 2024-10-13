@@ -1,8 +1,8 @@
 #ifndef DB_CREATOR_H
 #define DB_CREATOR_H
 
-#include "../include/schema.h"
+#include "../include/database.h"
 
-void create_db_structure(Schema *schema);
+void create_db_structure(DataBase *schema);
 
 #endif

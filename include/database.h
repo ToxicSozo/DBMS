@@ -1,5 +1,5 @@
-#ifndef SCHEMA_H 
-#define SCHEMA_H    
+#ifndef DATABASE_H 
+#define DATABASE_H    
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +23,8 @@ typedef struct {
     int tuples_limit;
     TableEntry *tables;
     size_t table_count;
-} Schema;
+} DataBase;
+
+void free_database(DataBase* schema);
 
 #endif

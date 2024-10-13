@@ -103,8 +103,8 @@ TableEntry* parse_tables_object(const char** json, size_t* table_count) {
     return tables;
 }
 
-Schema* parse_json(const char *json) {
-    Schema *schema = malloc(sizeof(Schema));
+DataBase* parse_json(const char *json) {
+    DataBase *schema = malloc(sizeof(DataBase));
 
     skip_whitespace(&json);
     if(*json != '{') return NULL;

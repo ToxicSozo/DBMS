@@ -39,7 +39,7 @@ int create_csv_file(const char* path, ColumnsList* columns) {
 }
 
 // Функция для создания структуры директорий и файлов
-void create_db_structure(Schema* schema) {
+void create_db_structure(DataBase* schema) {
     // Создание директории с названием схемы
     if (create_directory(schema->name) == -1) {
         return;
