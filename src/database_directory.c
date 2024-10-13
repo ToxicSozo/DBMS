@@ -1,4 +1,5 @@
-#include "../include/db_creator.h"
+#include "../include/database.h"
+#include "../include/database_directory.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,7 +40,7 @@ int create_csv_file(const char* path, ColumnsList* columns) {
 }
 
 // Функция для создания структуры директорий и файлов
-void create_db_structure(DataBase* schema) {
+void build_database_file_system(DataBase* schema) {
     // Создание директории с названием схемы
     if (create_directory(schema->name) == -1) {
         return;

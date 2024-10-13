@@ -1,6 +1,6 @@
 #include "../include/json_reader.h"
 
-char* load_JSON_file(const char *fname) {
+char* load_json_data(const char *fname) {
   FILE *fp = fopen(fname, "rb");
 
   if (!fp) {

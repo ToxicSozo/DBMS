@@ -5,6 +5,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-char* load_JSON_file(const char *fname);
+char* load_json_data(const char *fname);
 
 #endif

@@ -7,19 +7,19 @@
 
 // Структура для хранения списка колонок
 typedef struct {
-    char** columns;
+    char **columns;
     size_t count;
 } ColumnsList;
 
 // Структура для хранения пары ключ-значение (таблица-колонки)
 typedef struct {
-    char* table_name;
-    ColumnsList* columns;
+    char *table_name;
+    ColumnsList *columns;
 } TableEntry;
 
 // Структура для хранения информации о схеме
 typedef struct {
-    char* name;
+    char *name;
     int tuples_limit;
     TableEntry *tables;
     size_t table_count;

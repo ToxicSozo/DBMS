@@ -1,16 +1,17 @@
 #include "../include/json_reader.h"
 #include "../include/json_parser.h"
 #include "../include/database.h"
-#include "../include/db_creator.h"
-
+#include "../include/database_directory.h"
+#include <stdio.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <string.h>
+ 
 int main() {
-    char *json_data = load_JSON_file("scheme.json");
-    DataBase *schema = parse_json(json_data);
-
-    create_db_structure(schema);
+    DataBase *schema = parse_json(load_json_data("scheme.json"));
+    build_database_file_system(schema);
 
     free_database(schema);
-    free(json_data);
 
     return 0;
 }
