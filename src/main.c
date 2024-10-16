@@ -13,5 +13,8 @@ int main() {
 
     free_database(schema);
 
+
+
+
     return 0;
 }
