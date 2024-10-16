@@ -41,73 +41,59 @@ int parse_number(const char **json) {
     return number;
 }
 
-ColumnsList* parse_columns_array(const char** json) {
+void parse_columns_array(const char** json, Table* table) {
     skip_whitespace(json);
-    if (**json != '[') {
-        return NULL;
-    }
+    if (**json != '[') return;
     (*json)++;
-    ColumnsList* columns = malloc(sizeof(ColumnsList));
-    columns->count = 0;
-    columns->columns = NULL;
     while (**json != ']') {
         skip_whitespace(json);
         if (**json == '"') {
-            char* column = parse_string(json);
-            columns->count++;
-            columns->columns = (char**)realloc(columns->columns, columns->count * sizeof(char*));
-            columns->columns[columns->count - 1] = column;
+            char* column_name = parse_string(json);
+            add_column_to_table(table, column_name);
+            free(column_name);
         }
         skip_whitespace(json);
-        if (**json == ',') {
-            (*json)++;
-        }
+        if (**json == ',') (*json)++;
     }
     (*json)++;
-    return columns;
 }
 
-TableEntry* parse_tables_object(const char** json, size_t* table_count) {
+void parse_tables_object(const char** json, DataBase *db) {
     skip_whitespace(json);
-
-    if (**json != '{') return NULL;
+    if (**json != '{') return;
     (*json)++;
-
-    TableEntry* tables = NULL;
-    *table_count = 0;
-
     while (**json != '}') {
         skip_whitespace(json);
         if (**json == '"') {
             char* table_name = parse_string(json);
-            
             skip_whitespace(json);
             if (**json == ':') {
                 (*json)++;
+                add_table_to_database(db, table_name);
 
-                ColumnsList* columns = parse_columns_array(json);
-
-                (*table_count)++;
-
-                tables = (TableEntry*)realloc(tables, *table_count * sizeof(TableEntry));
-                tables[*table_count - 1].table_name = table_name;
-                tables[*table_count - 1].columns = columns;
+                Table* table = &db->tables[db->table_count - 1];
+                
+                parse_columns_array(json, table);
             }
+            free(table_name);
         }
         skip_whitespace(json);
-        if (**json == ',') {
-            (*json)++;
-        }
+        if (**json == ',') (*json)++;
     }
     (*json)++;
-    return tables;
 }
 
 DataBase* parse_json(const char *json) {
-    DataBase *schema = malloc(sizeof(DataBase));
+    DataBase *db = malloc(sizeof(DataBase));
+    if (db == NULL) {
+        return NULL;
+    }
 
     skip_whitespace(&json);
-    if(*json != '{') return NULL;
+    if (*json != '{') {
+        free(db);
+        return NULL;
+    }
 
     json++;
 
@@ -122,21 +108,24 @@ DataBase* parse_json(const char *json) {
                 json++;
 
                 if (strcmp(key, "name") == 0) {
-                    schema->name = parse_string(&json);
+                    char *name_database = parse_string(&json);
+                    printf("%s\n", name_database);
+                    db = create_database(name_database, db);
+                    free(name_database);
                 } else if (strcmp(key, "tuples_limit") == 0) {
-                    schema->tuples_limit = parse_number(&json);
+                    db->tuples_limit = parse_number(&json);
                 } else if (strcmp(key, "structure") == 0) {
-                    schema->tables = parse_tables_object(&json, &schema->table_count);
+                    parse_tables_object(&json, db);
                 }
-            }
-            free(key);
+
+                free(key);
+            } 
         }
         skip_whitespace(&json);
-
         if (*json == ',') {
             json++;
         }
     }
 
-    return schema;
+    return db;
 }

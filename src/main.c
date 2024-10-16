@@ -2,19 +2,47 @@
 #include "../include/json_parser.h"
 #include "../include/database.h"
 #include "../include/database_directory.h"
+#include "../include/csv_reader.h"
 #include <stdio.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <string.h>
+
+void print_data_node(DataNode *node) {
+    while (node != NULL) {
+        printf("    Data: %s\n", node->data);
+        node = node->next;
+    }
+}
+
+void print_table(Table *table) {
+    printf("  Table: %s\n", table->table_name);
+    for (size_t i = 0; i < table->column_count; i++) {
+        printf("    Column: %s\n", table->columns[i].name);
+        print_data_node(table->columns[i].data);
+    }
+}
+
+void print_database(DataBase *db) {
+    if (db == NULL) {
+        printf("Database is NULL\n");
+        return;
+    }
+
+    printf("Database Name: %s\n", db->name);
+    printf("Tuples Limit: %d\n", db->tuples_limit);
+    printf("Tables:\n");
+    for (size_t i = 0; i < db->table_count; i++) {
+        print_table(&db->tables[i]);
+    }
+}
  
 int main() {
-    DataBase *schema = parse_json(load_json_data("scheme.json"));
-    build_database_file_system(schema);
+    DataBase *db = parse_json(load_json_data("scheme.json"));
+    build_database_file_system(db);
 
-    free_database(schema);
+    csv_reader(db);
 
-
-
-
+    print_database(db);
     return 0;
 }

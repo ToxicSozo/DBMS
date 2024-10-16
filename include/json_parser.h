@@ -10,8 +10,8 @@
 DataBase* parse_json(const char* json);
 char* parse_string(const char **json);
 int parse_number(const char **json);
-ColumnsList* parse_columns_array(const char** json);
-TableEntry* parse_tables_object(const char** json, size_t* table_count);
+void parse_columns_array(const char** json, Table *table);
+void parse_tables_object(const char** json, DataBase *db);
 void skip_whitespace(const char **json);
 
 #endif

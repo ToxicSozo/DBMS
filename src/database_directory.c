@@ -8,15 +8,18 @@
 
 // Функция для создания директории
 int create_directory(const char* path) {
+    mode_t old_mask = umask(0);
     if (mkdir(path, 0777) == -1) {
         perror("Ошибка при создании директории");
+        umask(old_mask);
         return -1;
     }
+    umask(old_mask);
     return 0;
 }
 
 // Функция для создания файла 1.csv в директории и записи имен колонок
-int create_csv_file(const char* path, ColumnsList* columns) {
+int create_csv_file(const char* path, Column *columns, size_t column_count) {
     char file_path[256];
     snprintf(file_path, sizeof(file_path), "%s/1.csv", path);
 
@@ -27,9 +30,13 @@ int create_csv_file(const char* path, ColumnsList* columns) {
     }
 
     // Запись имен колонок в файл
-    for (size_t i = 0; i < columns->count; i++) {
-        fprintf(file, "%s", columns->columns[i]);
-        if (i < columns->count - 1) {
+    for (size_t i = 0; i < column_count; i++) {
+        if (columns[i].name) {
+            fprintf(file, "%s", columns[i].name);
+        } else {
+            fprintf(file, "NULL");
+        }
+        if (i < column_count - 1) {
             fprintf(file, ",");
         }
     }
@@ -40,7 +47,7 @@ int create_csv_file(const char* path, ColumnsList* columns) {
 }
 
 // Функция для создания структуры директорий и файлов
-void build_database_file_system(DataBase* schema) {
+void build_database_file_system(DataBase *schema) {
     // Создание директории с названием схемы
     if (create_directory(schema->name) == -1) {
         return;
@@ -49,13 +56,16 @@ void build_database_file_system(DataBase* schema) {
     // Создание поддиректорий для каждой таблицы и файла 1.csv в каждой поддиректории
     for (size_t i = 0; i < schema->table_count; i++) {
         char table_path[256];
-        snprintf(table_path, sizeof(table_path), "%s/%s", schema->name, schema->tables[i].table_name);
+        if (snprintf(table_path, sizeof(table_path), "%s/%s", schema->name, schema->tables[i].table_name) >= sizeof(table_path)) {
+            fprintf(stderr, "Путь к таблице слишком длинный\n");
+            continue;
+        }
 
         if (create_directory(table_path) == -1) {
             continue;
         }
 
-        if (create_csv_file(table_path, schema->tables[i].columns) == -1) {
+        if (create_csv_file(table_path, schema->tables[i].columns, schema->tables[i].column_count) == -1) {
             continue;
         }
     }

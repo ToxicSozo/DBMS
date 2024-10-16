@@ -5,26 +5,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Структура для хранения списка колонок
-typedef struct {
-    char **columns;
-    size_t count;
-} ColumnsList;
+typedef struct DataNode {
+    char *data;
+    struct DataNode *next;
+} DataNode;
 
-// Структура для хранения пары ключ-значение (таблица-колонки)
+typedef struct {
+    char *name;
+    DataNode *data;
+} Column;
+
 typedef struct {
     char *table_name;
-    ColumnsList *columns;
-} TableEntry;
+    Column *columns;
+    size_t column_count; 
+} Table;
 
-// Структура для хранения информации о схеме
 typedef struct {
     char *name;
     int tuples_limit;
-    TableEntry *tables;
+    Table *tables;
     size_t table_count;
 } DataBase;
 
-void free_database(DataBase* schema);
+DataBase* create_database(const char *database_name, DataBase *db);
+void add_table_to_database(DataBase *db, const char *table_name);
+void add_column_to_table(Table *table, const char *column_name);
+void add_data_to_table(Table *table, char **data);
+void free_database(DataBase *schema);
 
 #endif
