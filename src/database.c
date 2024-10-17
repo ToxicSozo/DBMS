@@ -25,10 +25,6 @@ void add_column_to_table(Table *table, const char *column_name) {
 }
 
 void add_data_to_table(Table *table, char **data) {
-    if (table == NULL || data == NULL) {
-        return;
-    }
-
     for (size_t i = 0; i < table->column_count; i++) {
         DataNode *new_node = malloc(sizeof(DataNode));
 
@@ -49,4 +45,21 @@ void add_data_to_table(Table *table, char **data) {
     }
 
     table->row_count++;
+}
+
+void free_column_data(Column *column) {
+    DataNode *current = column->data;
+    while (current != NULL) {
+        DataNode *next = current->next;
+        free(current->data);
+        free(current);
+        current = next;
+    }
+    column->data = NULL;
+}
+
+void free_table_data(Table *table) {
+    for (size_t i = 0; i < table->column_count; i++) {
+        free_column_data(&table->columns[i]);
+    }
 }

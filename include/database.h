@@ -30,9 +30,13 @@ typedef struct {
 } DataBase;
 
 DataBase* create_database(const char *database_name, DataBase *db);
+
 void add_table_to_database(DataBase *db, const char *table_name);
 void add_column_to_table(Table *table, const char *column_name);
 void add_data_to_table(Table *table, char **data);
+
 void free_database(DataBase *schema);
+void free_column_data(Column *column);
+void free_table_data(Table *table);
 
 #endif
