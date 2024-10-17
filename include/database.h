@@ -18,7 +18,8 @@ typedef struct {
 typedef struct {
     char *table_name;
     Column *columns;
-    size_t column_count; 
+    size_t column_count;
+    size_t row_count; 
 } Table;
 
 typedef struct {

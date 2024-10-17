@@ -28,7 +28,7 @@ void add_data_to_table(Table *table, char **data) {
     if (table == NULL || data == NULL) {
         return;
     }
-    
+
     for (size_t i = 0; i < table->column_count; i++) {
         DataNode *new_node = malloc(sizeof(DataNode));
 
@@ -47,4 +47,6 @@ void add_data_to_table(Table *table, char **data) {
             current->next = new_node;
         }
     }
+
+    table->row_count++;
 }

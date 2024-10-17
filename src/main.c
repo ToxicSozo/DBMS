@@ -3,6 +3,7 @@
 #include "../include/database.h"
 #include "../include/database_directory.h"
 #include "../include/csv_reader.h"
+#include "../include/dbms.h"
 #include <stdio.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -41,8 +42,12 @@ int main() {
     DataBase *db = parse_json(load_json_data("scheme.json"));
     build_database_file_system(db);
 
-    csv_reader(&db->tables[0]);
+    Table *table = &db->tables[0];
+
+    char *values[] = {"value5", "value6", "value7", "value8"};
+    insert(table, values);
 
     print_database(db);
+
     return 0;
 }

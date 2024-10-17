@@ -6,6 +6,6 @@
 #include "database.h"
 
 void dbms ();
-void insert(Table *table, const char **data);
+void insert(Table *table, char **data);
 
 #endif
