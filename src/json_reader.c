@@ -2,13 +2,8 @@
 
 char* load_json_data(const char *fname) {
   FILE *fp = fopen(fname, "rb");
-
-  if (!fp) {
-    printf("Ошибка: не удалось открыть файл.\n");
-    exit(1);
-  }
   
-  int64_t file_lenght = 0;
+  size_t file_lenght = 0;
 
   fseek(fp, 0, SEEK_END);
   file_lenght = ftell(fp);

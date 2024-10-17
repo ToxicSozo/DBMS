@@ -60,13 +60,18 @@ void parse_columns_array(const char** json, Table* table) {
 
 void parse_tables_object(const char** json, DataBase *db) {
     skip_whitespace(json);
+
     if (**json != '{') return;
+
     (*json)++;
+
     while (**json != '}') {
         skip_whitespace(json);
         if (**json == '"') {
             char* table_name = parse_string(json);
+
             skip_whitespace(json);
+
             if (**json == ':') {
                 (*json)++;
                 add_table_to_database(db, table_name);
@@ -78,16 +83,15 @@ void parse_tables_object(const char** json, DataBase *db) {
             free(table_name);
         }
         skip_whitespace(json);
+
         if (**json == ',') (*json)++;
     }
+
     (*json)++;
 }
 
 DataBase* parse_json(const char *json) {
     DataBase *db = malloc(sizeof(DataBase));
-    if (db == NULL) {
-        return NULL;
-    }
 
     skip_whitespace(&json);
     if (*json != '{') {
@@ -109,7 +113,6 @@ DataBase* parse_json(const char *json) {
 
                 if (strcmp(key, "name") == 0) {
                     char *name_database = parse_string(&json);
-                    printf("%s\n", name_database);
                     db = create_database(name_database, db);
                     free(name_database);
                 } else if (strcmp(key, "tuples_limit") == 0) {
@@ -121,7 +124,9 @@ DataBase* parse_json(const char *json) {
                 free(key);
             } 
         }
+        
         skip_whitespace(&json);
+
         if (*json == ',') {
             json++;
         }

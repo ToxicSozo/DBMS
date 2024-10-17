@@ -41,7 +41,7 @@ int main() {
     DataBase *db = parse_json(load_json_data("scheme.json"));
     build_database_file_system(db);
 
-    csv_reader(db);
+    csv_reader(&db->tables[0]);
 
     print_database(db);
     return 0;

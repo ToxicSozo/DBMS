@@ -1,5 +1,5 @@
-#ifndef QUERY_DATA_H
-#define QUERY_DATA_H
+#ifndef SQL_PARSER_H
+#define SQL_PARSER_H
 
 typedef struct {
     char **data_query;

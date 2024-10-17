@@ -22,6 +22,5 @@ typedef struct {
 } DataBaseDir;
 
 void build_database_file_system(DataBase *schema);
-void collect_database_file_system(DataBaseDir *db_dir, DataBase *schema);
 
 #endif

@@ -28,20 +28,18 @@ void add_data_to_table(Table *table, char **data) {
     if (table == NULL || data == NULL) {
         return;
     }
+    
     for (size_t i = 0; i < table->column_count; i++) {
         DataNode *new_node = malloc(sizeof(DataNode));
-        if (new_node == NULL) {
-            perror("Ошибка выделения памяти");
-            return;
-        }
+
         new_node->data = strdup(data[i]);
         new_node->next = NULL;
 
         if (table->columns[i].data == NULL) {
-            // Если список пуст, добавляем новый узел в начало
             table->columns[i].data = new_node;
-        } else {
-            // Иначе ищем последний узел и добавляем новый узел в конец
+        } 
+        
+        else {
             DataNode *current = table->columns[i].data;
             while (current->next != NULL) {
                 current = current->next;

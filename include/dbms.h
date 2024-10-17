@@ -1,16 +1,11 @@
 #ifndef DBMS_H
 #define DBMS_H
 
-#include "json_reader.h"
-#include "json_parser.h"
+#include "csv_reader.h"
+#include "csv_writer.h"
+#include "database.h"
 
-void dbms (){
-    char *input_query;
-
-    while (true)
-    {
-
-    }
-}
+void dbms ();
+void insert(Table *table, const char **data);
 
 #endif

@@ -1,11 +1,7 @@
 #include "../include/csv_reader.h"
 
-void csv_reader(DataBase *db) {
+void csv_reader(Table *table) {
     FILE *file = fopen("Схема 1/таблица1/1.csv", "r");
-    if (file == NULL) {
-        perror("Ошибка открытия файла");
-        return;
-    }
 
     char line[1024];
 
@@ -15,7 +11,8 @@ void csv_reader(DataBase *db) {
 
         line[strcspn(line, "\n")] = '\0';
 
-        char **elements = (char**)malloc(db->tables[0].column_count * sizeof(char*));
+        char **elements = (char**)malloc(table->column_count * sizeof(char*));
+
         if (elements == NULL) {
             perror("Ошибка выделения памяти");
             fclose(file);
@@ -25,29 +22,19 @@ void csv_reader(DataBase *db) {
         char *token = strtok(line, ",");
         int idx = 0;
 
-        while (token != NULL && idx < db->tables[0].column_count) {
+        while (token != NULL && idx < table->column_count) {
             elements[idx] = strdup(token);
-            if (elements[idx] == NULL) {
-                perror("Ошибка выделения памяти");
 
-                for (int i = 0; i < idx; i++) {
-                    free(elements[i]);
-                }
-                free(elements);
-                fclose(file);
-                return;
-            }
             token = strtok(NULL, ",");
             idx++;
         }
 
-        add_data_to_table(&db->tables[0], elements);
+        add_data_to_table(table, elements);
 
         for (int i = 0; i < idx; i++) {
             free(elements[i]);
         }
         free(elements);
     }
-
     fclose(file);
 }
