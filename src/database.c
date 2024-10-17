@@ -47,6 +47,38 @@ void add_data_to_table(Table *table, char **data) {
     table->row_count++;
 }
 
+int get_column_index(Table *table, const char *column_name) {
+    for (size_t i = 0; i < table->column_count; i++) {
+        if (strcmp(table->columns[i].name, column_name) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void delete_row(Table *table, size_t row_index) {
+    for (size_t j = 0; j < table->column_count; j++) {
+        DataNode *prev = NULL;
+        DataNode *current = table->columns[j].data;
+        
+        for (size_t k = 0; k < row_index && current != NULL; k++) {
+            prev = current;
+            current = current->next;
+        }
+
+        if (prev != NULL) {
+            prev->next = current->next;
+        } else {
+            table->columns[j].data = current->next;
+        }
+
+        free(current->data);
+        free(current);
+    }
+
+    table->row_count--;
+}
+
 void free_column_data(Column *column) {
     DataNode *current = column->data;
     while (current != NULL) {

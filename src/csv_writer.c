@@ -15,22 +15,18 @@ void csv_write(Table *table) {
     }
     fprintf(file, "\n");
 
-    // Запись данных строк
     for(size_t i = 0; i < table->row_count; i++) {
         for(size_t j = 0; j < table->column_count; j++) {
             DataNode *current = table->columns[j].data;
             
-            // Перемещаемся к нужной строке
             for(size_t k = 0; k < i && current != NULL; k++) {
                 current = current->next;
             }
 
-            if(j > 0) fprintf(file, ",");
+            if(j > 0 && current != NULL) fprintf(file, ",");
 
             if (current != NULL) {
                 fprintf(file, "%s", current->data);
-            } else {
-                fprintf(file, "");
             }
         }
         fprintf(file, "\n");

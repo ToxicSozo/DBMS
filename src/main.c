@@ -44,10 +44,8 @@ int main() {
 
     Table *table = &db->tables[0];
 
-    char *values[] = {"value9", "value10", "value11", "value12"};
+    char *values[] = {"value1", "value2", "value3", "value4"};
     insert(table, values);
-
-    print_database(db);
 
     return 0;
 }

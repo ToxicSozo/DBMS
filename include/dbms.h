@@ -7,5 +7,7 @@
 
 void dbms ();
 void insert(Table *table, char **data);
+void delete_where(Table *table, const char *column_name, const char *value);
+void delete(Table *table);
 
 #endif
