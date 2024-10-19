@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "json_reader.h": "c",
-        "db_creator.h": "c",
-        "database.h": "c",
-        "json_parser.h": "c",
-        "database_directory.h": "c"
-    }
-}

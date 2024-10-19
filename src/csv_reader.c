@@ -11,30 +11,18 @@ void csv_reader(Table *table) {
 
         line[strcspn(line, "\n")] = '\0';
 
-        char **elements = (char**)malloc(table->column_count * sizeof(char*));
-
-        if (elements == NULL) {
-            perror("Ошибка выделения памяти");
-            fclose(file);
-            return;
-        }
-
+        char *elements[table->column_count];
         char *token = strtok(line, ",");
         int idx = 0;
 
         while (token != NULL && idx < table->column_count) {
-            elements[idx] = strdup(token);
+            elements[idx] = token;
 
             token = strtok(NULL, ",");
             idx++;
         }
 
         add_data_to_table(table, elements);
-
-        for (int i = 0; i < idx; i++) {
-            free(elements[i]);
-        }
-        free(elements);
     }
     fclose(file);
 }

@@ -3,34 +3,29 @@
 void csv_write(Table *table) {
     FILE *file = fopen("Схема 1/таблица1/1.csv", "w");
 
-    if (file == NULL) {
-        perror("Failed to open file");
-        return;
+    size_t i, j, k;
+
+    for(i = 0; i < table->column_count; i++) {
+        if(i > 0) fputc(',', file);
+        fputs(table->columns[i].name, file);
+    }
+    fputc('\n', file);
+
+    DataNode *current_nodes[table->column_count];
+    for (j = 0; j < table->column_count; j++) {
+        current_nodes[j] = table->columns[j].data;
     }
 
-    // Запись заголовков столбцов
-    for(size_t i = 0; i < table->column_count; i++) {
-        if(i > 0) fprintf(file, ",");
-        fprintf(file, "%s", table->columns[i].name);
-    }
-    fprintf(file, "\n");
-
-    for(size_t i = 0; i < table->row_count; i++) {
-        for(size_t j = 0; j < table->column_count; j++) {
-            DataNode *current = table->columns[j].data;
-            
-            for(size_t k = 0; k < i && current != NULL; k++) {
-                current = current->next;
-            }
-
-            if(j > 0 && current != NULL) fprintf(file, ",");
-
-            if (current != NULL) {
-                fprintf(file, "%s", current->data);
+    for (i = 0; i < table->row_count; i++) {
+        for (j = 0; j < table->column_count; j++) {
+            if (current_nodes[j]) {
+                if (j > 0) fputc(',', file);
+                fputs(current_nodes[j]->data, file);
+                
+                current_nodes[j] = current_nodes[j]->next;
             }
         }
-        fprintf(file, "\n");
+        fputc('\n', file);
     }
-
     fclose(file);
 }
