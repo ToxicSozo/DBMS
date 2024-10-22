@@ -1,4 +1,4 @@
-#include "../include/json_reader.h"
+#include "json_reader.h"
 
 char* load_json_data(const char *fname) {
   FILE *fp = fopen(fname, "rb");

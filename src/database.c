@@ -1,4 +1,4 @@
-#include "../include/database.h"
+#include "database.h"
 
 DataBase* create_database(const char *database_name, DataBase *db) {
     db->name = strdup(database_name);
@@ -45,6 +45,16 @@ void add_data_to_table(Table *table, char **data) {
     }
 
     table->row_count++;
+}
+
+Table* get_table(DataBase *db, const char *table_name) {
+    for (size_t i = 0; i < db->table_count; i++) {
+        if (strcmp(db->tables[i].table_name, table_name) == 0) {
+            return &db->tables[i];
+        }
+    }
+
+    return NULL;
 }
 
 int get_column_index(Table *table, const char *column_name) {
@@ -94,4 +104,5 @@ void free_table_data(Table *table) {
     for (size_t i = 0; i < table->column_count; i++) {
         free_column_data(&table->columns[i]);
     }
+    table->row_count = 0;
 }

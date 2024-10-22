@@ -35,6 +35,7 @@ void add_table_to_database(DataBase *db, const char *table_name);
 void add_column_to_table(Table *table, const char *column_name);
 void add_data_to_table(Table *table, char **data);
 
+Table* get_table(DataBase *db, const char *table_name);
 int get_column_index(Table *table, const char *column_name);
 
 void delete_row(Table *table, size_t row_index);

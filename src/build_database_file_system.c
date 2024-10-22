@@ -1,5 +1,5 @@
-#include "../include/database.h"
-#include "../include/database_directory.h"
+#include "database.h"
+#include "build_database_file_system.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +16,12 @@ int create_directory(const char* path) {
     }
     umask(old_mask);
     return 0;
+}
+
+// Функция для проверки существования директории
+int directory_exists(const char* path) {
+    struct stat statbuf;
+    return (stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode));
 }
 
 // Функция для создания файла 1.csv в директории и записи имен колонок
@@ -48,6 +54,12 @@ int create_csv_file(const char* path, Column *columns, size_t column_count) {
 
 // Функция для создания структуры директорий и файлов
 void build_database_file_system(DataBase *schema) {
+    // Проверка существования директории с названием схемы
+    if (directory_exists(schema->name)) {
+        printf("Файловая система базы данных '%s' уже существует.\n", schema->name);
+        return;
+    }
+
     // Создание директории с названием схемы
     if (create_directory(schema->name) == -1) {
         return;

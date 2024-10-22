@@ -1,4 +1,4 @@
-#include "../include/csv_writer.h"
+#include "csv_writer.h"
 
 void csv_write(Table *table) {
     FILE *file = fopen("Схема 1/таблица1/1.csv", "w");
@@ -22,10 +22,12 @@ void csv_write(Table *table) {
                 if (j > 0) fputc(',', file);
                 fputs(current_nodes[j]->data, file);
                 
+                if (j == table->column_count - 1 && current_nodes[j]) fputc('\n', file);
+
                 current_nodes[j] = current_nodes[j]->next;
             }
         }
-        fputc('\n', file);
     }
+
     fclose(file);
 }
