@@ -1,4 +1,4 @@
-#include "csv_writer.h"
+#include "../include/csv_writer.h"
 
 void csv_write(Table *table) {
     FILE *file = fopen("Схема 1/таблица1/1.csv", "w");

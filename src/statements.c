@@ -1,4 +1,5 @@
-#include "statements.h"
+#include "../include/statements.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -23,6 +24,7 @@ void execute_statement(DataBase *db, Statement *statement, InputBuffer *input_bu
             insert(db, input_buffer->buffer);
             break;
         case (STATEMENT_SELECT):
+            Select(db, input_buffer->buffer);
             break;
         case (STATEMENT_DELETE):
             delete(db, input_buffer->buffer);

@@ -1,4 +1,4 @@
-#include "insert.h"
+#include "../include/insert.h"
 
 void insert(DataBase *db, char *buffer) {
     char *table_name = NULL;

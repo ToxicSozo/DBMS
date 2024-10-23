@@ -1,4 +1,4 @@
-#include "database.h"
+#include "../include/database.h"
 
 DataBase* create_database(const char *database_name, DataBase *db) {
     db->name = strdup(database_name);

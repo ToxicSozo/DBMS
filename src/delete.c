@@ -1,4 +1,5 @@
-#include "delete.h"
+#include "../include/delete.h"
+
 #include <stdio.h>
 #include <string.h>
 

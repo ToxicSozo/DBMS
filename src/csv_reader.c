@@ -1,4 +1,4 @@
-#include "csv_reader.h"
+#include "../include/csv_reader.h"
 
 void csv_reader(Table *table) {
     FILE *file = fopen("Схема 1/таблица1/1.csv", "r");

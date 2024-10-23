@@ -1,10 +1,11 @@
-#include "input_buffer.h"
-#include "meta_commands.h"
-#include "statements.h"
-#include "database.h"
-#include "json_parser.h"
-#include "json_reader.h"
-#include "build_database_file_system.h"
+#include "../include/input_buffer.h"
+#include "../include/meta_commands.h"
+#include "../include/statements.h"
+#include "../include/database.h"
+#include "../include/json_parser.h"
+#include "../include/json_reader.h"
+#include "../include/build_database_file_system.h"
+
 #include <stdbool.h>
 
 int main(int argc, char* argv[]) {

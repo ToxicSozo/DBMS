@@ -4,6 +4,7 @@
 #include "input_buffer.h"
 #include "database.h"
 #include "insert.h"
+#include "select.h"
 #include "delete.h"
 
 typedef enum {
