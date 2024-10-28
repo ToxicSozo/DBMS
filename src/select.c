@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <stdio.h>
-
 void print_format(char ***format, size_t column_count, size_t *row_counts) {
     for (size_t row = 0; row < row_counts[0]; row++) {
         for (size_t col = 0; col < column_count; col++) {
@@ -45,6 +43,70 @@ char* get_column_data(Table *table, const char *column_name, size_t row_index) {
 
     printf("No data found for row index %zu in column '%s'!\n", row_index, column_name);
     return NULL;
+}
+
+int select_check_condition(Table *table, size_t row_index, char *condition) {
+    char column_name[50];
+    char value[50];
+    char quoted_value[50];
+
+    condition = strim_whitespace(condition);
+
+    if (sscanf(condition, "%49[^ ] = '%49[^']'", column_name, quoted_value) == 2) {
+        int col_index = get_column_index(table, column_name);
+        if (col_index == -1) {
+            printf("Column '%s' not found\n", column_name);
+            return 0;
+        }
+
+        return strcmp(get_column_data(table, column_name, row_index), quoted_value) == 0;
+    }
+
+    if (sscanf(condition, "%49[^ ] = %49s", column_name, value) == 2) {
+        int col_index = get_column_index(table, column_name);
+        if (col_index == -1) {
+            printf("Column '%s' not found\n", column_name);
+            return 0;
+        }
+
+        return strcmp(get_column_data(table, column_name, row_index), value) == 0;
+    }
+
+    printf("Condition '%s' is invalid\n", condition);
+    return 0;
+}
+
+int select_evaluate_conditions(Table *table, size_t row_index, char *conditions) {
+    char *or_ptr = strstr(conditions, "OR");
+    if (or_ptr != NULL) {
+        char left_condition[256], right_condition[256];
+        strncpy(left_condition, conditions, or_ptr - conditions);
+        left_condition[or_ptr - conditions] = '\0';
+        strcpy(right_condition, or_ptr + 2);
+
+        strim_whitespace(left_condition);
+        strim_whitespace(right_condition);
+
+        return select_evaluate_conditions(table, row_index, left_condition) || 
+               select_evaluate_conditions(table, row_index, right_condition);
+    }
+
+    char *and_ptr = strstr(conditions, "AND");
+    if (and_ptr != NULL) {
+        char left_condition[256], right_condition[256];
+        strncpy(left_condition, conditions, and_ptr - conditions);
+        left_condition[and_ptr - conditions] = '\0';
+        strcpy(right_condition, and_ptr + 3);
+
+        strim_whitespace(left_condition);
+        strim_whitespace(right_condition);
+
+        return select_evaluate_conditions(table, row_index, left_condition) && 
+               select_evaluate_conditions(table, row_index, right_condition);
+    }
+
+    strim_whitespace(conditions);
+    return select_check_condition(table, row_index, conditions);
 }
 
 void Select(DataBase *db, char *buffer) {
@@ -107,6 +169,34 @@ void Select(DataBase *db, char *buffer) {
         }
 
         free_table_data(table);
+    }
+
+    // Handle WHERE clause
+    char *where_clause = strstr(buffer, "WHERE");
+    if (where_clause) {
+        where_clause += strlen("WHERE");
+        where_clause = strim_whitespace(where_clause);
+
+        for (size_t i = 0; i < column_count; i++) {
+            Table *table = get_table(db, table_names[i]);
+            if (!table) {
+                printf("table %s not found\n", table_names[i]);
+                return;
+            }
+
+            csv_reader(table, db->name);
+
+            for (size_t row = 0; row < table->row_count; row++) {
+                if (!select_evaluate_conditions(table, row, where_clause)) {
+                    for (size_t col = 0; col < column_count; col++) {
+                        free(format[col][row]);
+                        format[col][row] = NULL;
+                    }
+                }
+            }
+
+            free_table_data(table);
+        }
     }
 
     print_format(format, column_count, row_counts);
