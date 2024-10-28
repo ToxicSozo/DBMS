@@ -1,7 +1,10 @@
 #include "../include/csv_writer.h"
 
-void csv_write(Table *table) {
-    FILE *file = fopen("Схема 1/таблица1/1.csv", "w");
+void csv_write(Table *table, char *db_name) {
+    char filepath[1024];
+    snprintf(filepath, sizeof(filepath), "%s/%s/1.csv", db_name, table->table_name);
+
+    FILE *file = fopen(filepath, "w");
 
     size_t i, j, k;
 

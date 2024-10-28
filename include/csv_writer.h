@@ -4,6 +4,6 @@
 #include "database.h"
 #include <stdlib.h>
 
-void csv_write(Table *table);
+void csv_write(Table *table, char *db_name);
 
 #endif

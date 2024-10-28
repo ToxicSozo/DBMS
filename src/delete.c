@@ -16,11 +16,10 @@ char *trim_whitespace(char *str) {
 int check_condition(Table *table, size_t row_index, char *condition) {
     char column_name[50];
     char value[50];
-    char quoted_value[50];  // Для значений в кавычках
+    char quoted_value[50];
 
-    condition = trim_whitespace(condition);  // Убираем пробелы из условия
+    condition = trim_whitespace(condition);
 
-    // Проверка на наличие значения в кавычках
     if (sscanf(condition, "%49[^ ] = '%49[^']'", column_name, quoted_value) == 2) {
         int col_index = get_column_index(table, column_name);
         if (col_index == -1) {
@@ -28,11 +27,9 @@ int check_condition(Table *table, size_t row_index, char *condition) {
             return 0;
         }
 
-        // Сравниваем значение из таблицы с тем, что внутри кавычек
         return strcmp(table->columns[col_index].data[row_index].data, quoted_value) == 0;
     }
 
-    // Если значения нет в кавычках, проверяем без них
     if (sscanf(condition, "%49[^ ] = %49s", column_name, value) == 2) {
         int col_index = get_column_index(table, column_name);
         if (col_index == -1) {
@@ -43,25 +40,21 @@ int check_condition(Table *table, size_t row_index, char *condition) {
         return strcmp(table->columns[col_index].data[row_index].data, value) == 0;
     }
 
-    printf("Condition '%s' is invalid\n", condition);  // Отладочный вывод
+    printf("Condition '%s' is invalid\n", condition);
     return 0;
 }
 
-// Рекурсивная функция для оценки всех условий с учётом AND/OR
 int evaluate_conditions(Table *table, size_t row_index, char *conditions) {
     char *or_ptr = strstr(conditions, "OR");
     if (or_ptr != NULL) {
-        // Разделяем по оператору OR, проверяем каждую часть отдельно
         char left_condition[256], right_condition[256];
-        strncpy(left_condition, conditions, or_ptr - conditions);  // Левая часть до OR
+        strncpy(left_condition, conditions, or_ptr - conditions);
         left_condition[or_ptr - conditions] = '\0';
-        strcpy(right_condition, or_ptr + 2);  // Правая часть после OR
+        strcpy(right_condition, or_ptr + 2);
 
-        // Убираем пробелы из обеих частей
         trim_whitespace(left_condition);
         trim_whitespace(right_condition);
 
-        // Оцениваем: если хоть одно условие истинно, возвращаем 1
         return evaluate_conditions(table, row_index, left_condition) || 
                evaluate_conditions(table, row_index, right_condition);
     }
@@ -84,7 +77,6 @@ int evaluate_conditions(Table *table, size_t row_index, char *conditions) {
     return check_condition(table, row_index, conditions);
 }
 
-// Основная функция удаления строк с условиями
 void delete(DataBase *db, char *buffer) {
     char *table_name = NULL;
 
@@ -109,29 +101,37 @@ void delete(DataBase *db, char *buffer) {
             if (token && strcmp(token, "WHERE") == 0) {
                 char *condition = strtok(NULL, "");
                 if (condition) {
-                    csv_reader(table);
+                    csv_reader(table, db->name);
                     for (size_t i = 0; i < table->row_count; i++) {
                         if (evaluate_conditions(table, i, condition)) {
                             printf("Deleting row %zu from table '%s'\n", i, table->table_name);
                             delete_row(table, i);
-                            i--;  // Уменьшаем индекс, так как строка удалена
+                            i--;
                         }
                     }
-                    csv_write(table);
+                    csv_write(table, db->name);
                     free_table_data(table);
-                } else {
+                } 
+                
+                else {
                     printf("Invalid syntax: missing condition after WHERE!\n");
                     return;
                 }
-            } else if (!token) {
-                csv_reader(table);
+            } 
+            
+            else if (!token) {
+                csv_reader(table, db->name);
                 free_table_data(table);
-                csv_write(table);
+                csv_write(table, db->name);
             }
-        } else {
+        } 
+        
+        else {
             printf("Invalid command syntax: missing FROM!\n");
         }
-    } else {
+    } 
+    
+    else {
         printf("Invalid command syntax!\n");
     }
 }

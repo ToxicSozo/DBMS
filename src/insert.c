@@ -29,9 +29,12 @@ void insert(DataBase *db, char *buffer) {
 
         for (size_t i = 0; i < table->column_count; i++) {
             token = strtok(NULL, ", ");
+            
             if (token) {
                 values[i] = strdup(token);
-            } else {
+            }
+            
+            else {
                 printf("Not enough values provided for table '%s'.\n", table_name);
                 return;
             }
@@ -42,9 +45,9 @@ void insert(DataBase *db, char *buffer) {
             return;
         }
 
-        csv_reader(table);
+        csv_reader(table, db->name);
         add_data_to_table(table, values);
-        csv_write(table);
+        csv_write(table, db->name);
 
         for (size_t i = 0; i < table->column_count; i++) {
             free(values[i]);

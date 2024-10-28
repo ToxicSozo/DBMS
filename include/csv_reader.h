@@ -4,6 +4,6 @@
 #include "database.h"
 #include <stdlib.h>
 
-void csv_reader(Table *table);
+void csv_reader(Table *table, char *db_name);
 
 #endif
