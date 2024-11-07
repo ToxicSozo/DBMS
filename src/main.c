@@ -5,6 +5,8 @@
 #include "../include/json_parser.h"
 #include "../include/json_reader.h"
 #include "../include/build_database_file_system.h"
+#include "../include/sql_parsed_command.h"
+#include "../include/sql_parser.h"
 
 #include <stdbool.h>
 
@@ -36,7 +38,12 @@ int main(int argc, char* argv[]) {
                 continue;
         }
 
-        execute_statement(database, &statement, input_buffer);
+
+        SQLParsedCommand *parsed_comand = sql_parser(input_buffer->buffer, &statement);
+
+        execute_statement(database, &statement, parsed_comand);
+        free_parsed_command(parsed_comand);
+
         printf("Executed.\n");
     }
 

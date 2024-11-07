@@ -4,7 +4,8 @@
 #include "database.h"
 #include "csv_reader.h"
 #include "csv_writer.h"
+#include "sql_parsed_command.h"
 
-void insert(DataBase *db, char *bufer);
+void insert(DataBase *db, SQLParsedCommand *parsed_command);
 
 #endif

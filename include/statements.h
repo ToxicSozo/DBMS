@@ -6,6 +6,7 @@
 #include "insert.h"
 #include "select.h"
 #include "delete.h"
+#include "sql_parsed_command.h"
 
 typedef enum {
     PREPARE_SUCCESS,
@@ -19,6 +20,6 @@ typedef struct {
 } Statement;
 
 PrepareResult prepare_statement(InputBuffer *input_buffer, Statement *statement);
-void execute_statement(DataBase *db, Statement *statement, InputBuffer *input_buffer);
+void execute_statement(DataBase *db, Statement *statement, SQLParsedCommand *pars_command);
 
 #endif
