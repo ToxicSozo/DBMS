@@ -57,6 +57,38 @@ Table* get_table(DataBase *db, const char *table_name) {
     return NULL;
 }
 
+#include "../include/database.h"
+
+char** get_row_in_table(Table *table, size_t row_index) {
+    if (row_index >= table->row_count) {
+        return NULL;
+    }
+
+    char **row_data = malloc(table->column_count * sizeof(char*));
+    if (row_data == NULL) {
+        return NULL;
+    }
+
+    for (size_t i = 0; i < table->column_count; i++) {
+        row_data[i] = NULL;
+    }
+
+    for (size_t i = 0; i < table->column_count; i++) {
+        DataNode *current = table->columns[i].data;
+        for (size_t j = 0; j < row_index && current != NULL; j++) {
+            current = current->next;
+        }
+
+        if (current != NULL) {
+            row_data[i] = strdup(current->data);
+        } else {
+            row_data[i] = NULL;
+        }
+    }
+
+    return row_data;
+}
+
 int get_column_index(Table *table, const char *column_name) {
     for (size_t i = 0; i < table->column_count; i++) {
         if (strcmp(table->columns[i].name, column_name) == 0) {

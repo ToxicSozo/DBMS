@@ -27,6 +27,7 @@ void execute_statement(DataBase *db, Statement *statement, SQLParsedCommand *par
         case (STATEMENT_SELECT):
             break;
         case (STATEMENT_DELETE):
+            delete(db, parsed_comand);
             break;
     }
 }

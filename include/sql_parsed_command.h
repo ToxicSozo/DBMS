@@ -5,6 +5,19 @@ typedef struct {
     char *table_name;
     char **values;
     int value_count;
+} InsertCommand;
+
+typedef struct {
+    char *table_name;
+    char *condition;
+} DeleteCommand;
+
+typedef struct {
+    union {
+        InsertCommand insert_data;
+        DeleteCommand delete_data;
+    } command_data;
+    int command_type; 
 } SQLParsedCommand;
 
 #endif

@@ -2,51 +2,36 @@
 #include <string.h>
 
 #include "../include/delete.h"
+#include "../include/sql_parsed_command.h"
 #include "../include/str_split.h"
 
-void delete(DataBase *db, char *buffer) {
-    char *table_name = NULL;
-    
-    char **tokens = str_split(buffer, ' ');
-    if (tokens[0] && strcmp(tokens[0], "DELETE") == 0) {
-        if (tokens[1] && strcmp(tokens[1], "FROM") == 0) {
-            table_name = strdup(tokens[2]);
-        }
-        
-        else {
-            printf("Invalid command syntax!\n");
-            free_split(tokens);
-            return;
-        }
-
-    }
-    
-    else {
-        printf("Invalid command syntax!\n");
-        free_split(tokens);
-        return;
-    }
-
-    Table *table = get_table(db, table_name);
+void delete(DataBase *db, SQLParsedCommand *parsed_command) {
+    Table *table = get_table(db, parsed_command->command_data.insert_data.table_name);
     if (!table) {
-        printf("Table '%s' not found!\n", table_name);
-        
-        free(table_name);
-        free_split(tokens);
-
+        printf("Table '%s' notfound!\n", parsed_command->command_data.insert_data.table_name);
         return;
     }
 
-    if (tokens[3] && strcmp(tokens[3], "WHERE") == 0) {
-        
+    if(parsed_command->command_data.delete_data.condition) {
+        const char *delim[] = {"AND", "OR"};
+
+        char **condition_tokens = str_split(parsed_command->command_data.delete_data.condition, 
+                                            delim, 2);
+
+        for(size_t i = 0; condition_tokens[i]; i++) {
+            printf("%s\n", condition_tokens[i]);
+        }
+
+        csv_reader(table, db->name);
+        for (size_t i = 0; i < table->row_count; i++) {
+            char **row_data = get_row_in_table(table, i);
+
+        }
     }
 
-    else if (!tokens[3]) {
+    else {
         csv_reader(table, db->name);
         free_table_data(table);
         csv_write(table, db->name);
     }
-
-    free(table_name);
-    free_split(tokens);
 }

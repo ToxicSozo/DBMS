@@ -1,8 +1,10 @@
 #ifndef WHERE_H
 #define WHERE_F
 
+#include <stdbool.h>
+
 #include "database.h"
 
-void where(Table table,  char *condition);
+bool where(Table table,  char *condition);
 
 #endif

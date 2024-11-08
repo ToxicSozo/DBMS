@@ -38,10 +38,10 @@ int main(int argc, char* argv[]) {
                 continue;
         }
 
-
         SQLParsedCommand *parsed_comand = sql_parser(input_buffer->buffer, &statement);
 
         execute_statement(database, &statement, parsed_comand);
+        
         free_parsed_command(parsed_comand);
 
         printf("Executed.\n");
