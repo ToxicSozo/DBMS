@@ -12,10 +12,8 @@ static SQLParsedCommand* parse_delete(char **tokens);
 
 SQLParsedCommand* sql_parser(char *buffer, Statement *statement) {
     SQLParsedCommand *parsed_command = NULL;
-
-    const char *delim[] = {" "};
     
-    char **tokens = str_split(buffer, delim, 1);
+    char **tokens = str_split(buffer, " ");
     
     switch (statement->type) {
         case STATEMENT_INSERT:
@@ -27,8 +25,6 @@ SQLParsedCommand* sql_parser(char *buffer, Statement *statement) {
             parsed_command = parse_delete(tokens);
             break;
     }
-
-    free_split(tokens);
 
     return parsed_command;
 }
