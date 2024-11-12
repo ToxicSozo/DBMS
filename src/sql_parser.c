@@ -6,14 +6,16 @@
 #include "../include/sql_parser.h"
 #include "../include/statements.h"
 #include "../include/str_split.h"
+#include "../include/list.h"
 
-static SQLParsedCommand* parse_insert(char **tokens);
-static SQLParsedCommand* parse_delete(char **tokens);
+static SQLParsedCommand* parse_insert(List *tokens);
+static SQLParsedCommand* parse_delete(List *tokens);
+
 
 SQLParsedCommand* sql_parser(char *buffer, Statement *statement) {
     SQLParsedCommand *parsed_command = NULL;
     
-    char **tokens = str_split(buffer, " ");
+    List *tokens = str_split(buffer, " ");
     
     switch (statement->type) {
         case STATEMENT_INSERT:
@@ -26,66 +28,45 @@ SQLParsedCommand* sql_parser(char *buffer, Statement *statement) {
             break;
     }
 
+    free_list(tokens);
+
     return parsed_command;
 }
 
-static SQLParsedCommand* parse_insert(char **tokens) {
-    if (!tokens[1] || strcmp(tokens[1], "INTO") != 0 || !tokens[2] || !tokens[3] || strcmp(tokens[3], "VALUES") != 0) {
+static SQLParsedCommand* parse_insert(List *tokens) {
+    if (tokens->size < 4 || strcmp(get_element_at(tokens, 1), "INTO") != 0
+    || strcmp(get_element_at(tokens, 3), "VALUES") != 0) {
+
         printf("Invalid INSERT command syntax!\n");
         return NULL;
     }
 
-    SQLParsedCommand *parsed_command = malloc(sizeof(SQLParsedCommand));
-    if (!parsed_command) {
-        fprintf(stderr, "Memory allocation error.\n");
-        return NULL;
-    }
-    
-    parsed_command->command_type = 0; // 0 for insert
+    SQLParsedCommand *parsed_command = (SQLParsedCommand*)malloc(sizeof(SQLParsedCommand));
+    parsed_command->command_type = 0;
+
     InsertCommand *insert_cmd = &parsed_command->command_data.insert_data;
 
-    insert_cmd->table_name = strdup(tokens[2]);
-    if (!insert_cmd->table_name) {
-        fprintf(stderr, "Memory allocation error.\n");
-        free(parsed_command);
+    insert_cmd->table_name = strdup((char*)get_element_at(tokens, 2));
+
+    insert_cmd->values = new_list();
+    if (insert_cmd->values == NULL) {
+        printf("Memory allocation failed for insert_cmd->values\n");
         return NULL;
     }
 
     int value_count = 0;
-    for (char **token = &tokens[4]; *token; token++) {
+    for (size_t i = 4; i < tokens->size; i++) {
+        push_back(insert_cmd->values, strdup(get_element_at(tokens, i)));
         value_count++;
     }
 
-    insert_cmd->values = malloc((value_count + 1) * sizeof(char *));
-    if (!insert_cmd->values) {
-        fprintf(stderr, "Memory allocation error.\n");
-        free(insert_cmd->table_name);
-        free(parsed_command);
-        return NULL;
-    }
-
-    int idx = 0;
-    for (char **token = &tokens[4]; *token; token++) {
-        insert_cmd->values[idx++] = strdup(*token);
-        if (!insert_cmd->values[idx - 1]) {
-            fprintf(stderr, "Memory allocation error.\n");
-            for (int i = 0; i < idx; i++) {
-                free(insert_cmd->values[i]);
-            }
-            free(insert_cmd->values);
-            free(insert_cmd->table_name);
-            free(parsed_command);
-            return NULL;
-        }
-    }
-    insert_cmd->values[idx] = NULL;
     insert_cmd->value_count = value_count;
 
     return parsed_command;
 }
 
-static SQLParsedCommand* parse_delete(char **tokens) {
-    if (!tokens[1] || strcmp(tokens[1], "FROM") != 0 || !tokens[2]) {
+static SQLParsedCommand* parse_delete(List *tokens) {
+    if (tokens->size < 3 || strcmp((char*)get_element_at(tokens, 1), "FROM") != 0) {
         printf("Invalid DELETE command syntax!\n");
         return NULL;
     }
@@ -96,21 +77,20 @@ static SQLParsedCommand* parse_delete(char **tokens) {
         return NULL;
     }
 
-    parsed_command->command_type = 1; // 1 for delete
+    parsed_command->command_type = 1;
     DeleteCommand *delete_cmd = &parsed_command->command_data.delete_data;
 
-    delete_cmd->table_name = strdup(tokens[2]);
+    delete_cmd->table_name = strdup((char*)get_element_at(tokens, 2));
     if (!delete_cmd->table_name) {
         fprintf(stderr, "Memory allocation error.\n");
         free(parsed_command);
         return NULL;
     }
 
-    if (tokens[3] && strcmp(tokens[3], "WHERE") == 0) {
-        // Collect all tokens after "WHERE" into a single string
+    if (tokens->size > 3 && strcmp((char*)get_element_at(tokens, 3), "WHERE") == 0) {
         int condition_length = 0;
-        for (char **token = &tokens[4]; *token; token++) {
-            condition_length += strlen(*token) + 1; // +1 for space or null terminator
+        for (size_t i = 4; i < tokens->size; i++) {
+            condition_length += strlen((char*)get_element_at(tokens, i)) + 1; // +1 for space or null terminator
         }
 
         delete_cmd->condition = malloc(condition_length);
@@ -121,12 +101,13 @@ static SQLParsedCommand* parse_delete(char **tokens) {
             return NULL;
         }
 
-        delete_cmd->condition[0] = '\0'; // Initialize the string
-        for (char **token = &tokens[4]; *token; token++) {
-            strcat(delete_cmd->condition, *token);
-            strcat(delete_cmd->condition, " ");
+        delete_cmd->condition[0] = '\0';
+        for (size_t i = 4; i < tokens->size; i++) {
+            strcat(delete_cmd->condition, (char*)get_element_at(tokens, i));
+            if (i < tokens->size - 1) {
+                strcat(delete_cmd->condition, " ");
+            }
         }
-        delete_cmd->condition[condition_length - 1] = '\0'; // Remove the trailing space
     } else {
         delete_cmd->condition = NULL;
     }

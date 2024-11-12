@@ -1,4 +1,5 @@
 #include "../include/csv_reader.h"
+#include "../include/str_split.h"
 
 void csv_reader(Table *table, char *db_name) {
     char filepath[1024];
@@ -14,18 +15,10 @@ void csv_reader(Table *table, char *db_name) {
 
         line[strcspn(line, "\n")] = '\0';
 
-        char *elements[table->column_count];
-        char *token = strtok(line, ",");
-        int idx = 0;
+        List *values = str_split(line, ",");
+        add_data_to_table(table, values);
 
-        while (token != NULL && idx < table->column_count) {
-            elements[idx] = token;
-
-            token = strtok(NULL, ",");
-            idx++;
-        }
-
-        add_data_to_table(table, elements);
+        free_list(values);
     }
 
     fclose(file);

@@ -1,9 +1,11 @@
 #ifndef SQL_PARSED_COMMAND
 #define SQL_PARSED_COMMAND
 
+#include "list.h"
+
 typedef struct {
     char *table_name;
-    char **values;
+    List *values;
     int value_count;
 } InsertCommand;
 
@@ -20,6 +22,6 @@ typedef struct {
     int command_type; 
 } SQLParsedCommand;
 
-#endif
-
 void free_parsed_command(SQLParsedCommand *parsed_command);
+
+#endif

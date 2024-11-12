@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "list.h"
+
 typedef struct DataNode {
     char *data;
     struct DataNode *next;
@@ -33,11 +35,11 @@ DataBase* create_database(const char *database_name, DataBase *db);
 
 void add_table_to_database(DataBase *db, const char *table_name);
 void add_column_to_table(Table *table, const char *column_name);
-void add_data_to_table(Table *table, char **data);
+void add_data_to_table(Table *table, List *list);
 
 Table* get_table(DataBase *db, const char *table_name);
 int get_column_index(Table *table, const char *column_name);
-char** get_row_in_table(Table *table, size_t row_index);
+List* get_row_in_table(Table *table, size_t row_index);
 
 void delete_row(Table *table, size_t row_index);
 

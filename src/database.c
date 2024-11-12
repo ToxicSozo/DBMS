@@ -1,4 +1,5 @@
 #include "../include/database.h"
+#include "../include/list.h"
 
 DataBase* create_database(const char *database_name, DataBase *db) {
     db->name = strdup(database_name);
@@ -24,11 +25,11 @@ void add_column_to_table(Table *table, const char *column_name) {
     table->columns[table->column_count - 1].data = NULL;
 }
 
-void add_data_to_table(Table *table, char **data) {
+void add_data_to_table(Table *table, List *list) {
     for (size_t i = 0; i < table->column_count; i++) {
         DataNode *new_node = malloc(sizeof(DataNode));
 
-        new_node->data = strdup(data[i]);
+        new_node->data = strdup(get_element_at(list, i));
         new_node->next = NULL;
 
         if (table->columns[i].data == NULL) {
@@ -57,20 +58,15 @@ Table* get_table(DataBase *db, const char *table_name) {
     return NULL;
 }
 
-#include "../include/database.h"
-
-char** get_row_in_table(Table *table, size_t row_index) {
+List* get_row_in_table(Table *table, size_t row_index) {
     if (row_index >= table->row_count) {
         return NULL;
     }
 
-    char **row_data = malloc(table->column_count * sizeof(char*));
+    List *row_data = new_list();
+
     if (row_data == NULL) {
         return NULL;
-    }
-
-    for (size_t i = 0; i < table->column_count; i++) {
-        row_data[i] = NULL;
     }
 
     for (size_t i = 0; i < table->column_count; i++) {
@@ -80,9 +76,7 @@ char** get_row_in_table(Table *table, size_t row_index) {
         }
 
         if (current != NULL) {
-            row_data[i] = strdup(current->data);
-        } else {
-            row_data[i] = NULL;
+            push_back(row_data, strdup(current->data));
         }
     }
 

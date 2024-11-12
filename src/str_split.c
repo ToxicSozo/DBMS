@@ -1,47 +1,40 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
-#include "../include/str_split.h"
+#include "../include/list.h"
 
-static char** _strsplit( const char* s, const char* delim, size_t* nb ) {
-	void* data;
-	char* _s = ( char* )s;
-	const char** ptrs;
-	size_t
-		ptrsSize,
-		nbWords = 1,
-		sLen = strlen( s ),
-		delimLen = strlen( delim );
+List* str_split(const char* s, const char* delim) {
+    List* list = new_list(); // Создаем новый список
+    if (list == NULL) {
+        fprintf(stderr, "%s\n", "memory allocation failed");
+        return NULL;
+    }
 
-	while ( ( _s = strstr( _s, delim ) ) ) {
-		_s += delimLen;
-		++nbWords;
-	}
-	ptrsSize = ( nbWords + 1 ) * sizeof( char* );
-	ptrs =
-	data = malloc( ptrsSize + sLen + 1 );
-	if ( data ) {
-		*ptrs =
-		_s = strcpy( ( ( char* )data ) + ptrsSize, s );
-		if ( nbWords > 1 ) {
-			while ( ( _s = strstr( _s, delim ) ) ) {
-				*_s = '\0';
-				_s += delimLen;
-				*++ptrs = _s;
-			}
-		}
-		*++ptrs = NULL;
-	}
-	if ( nb ) {
-		*nb = data ? nbWords : 0;
-	}
-	return data;
-}
+    char* _s = (char*)s;
+    const char* delim_start = delim;
+    size_t delim_len = strlen(delim);
 
-char** str_split( const char* s, const char* delim ) {
-	return _strsplit( s, delim, NULL );
-}
+    while (*_s != '\0') {
+        if (strncmp(_s, delim_start, delim_len) == 0) {
+            _s += delim_len;
+        } else {
+            char* start = _s;
+            while (*_s != '\0' && strncmp(_s, delim_start, delim_len) != 0) {
+                _s++;
+            }
+            size_t len = _s - start;
+            char* token = (char*)malloc((len + 1) * sizeof(char));
+            if (token == NULL) {
+                fprintf(stderr, "%s\n", "memory allocation failed");
+                free_list(list);
+                return NULL;
+            }
+            strncpy(token, start, len);
+            token[len] = '\0';
+            push_back(list, token); // Добавляем токен в список
+        }
+    }
 
-char** str_split_count( const char* s, const char* delim, size_t* nb ) {
-	return _strsplit( s, delim, nb );
+    return list;
 }
