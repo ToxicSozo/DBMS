@@ -5,7 +5,7 @@
 #include "../include/list.h"
 
 List* str_split(const char* s, const char* delim) {
-    List* list = new_list(); // Создаем новый список
+    List* list = new_list();
     if (list == NULL) {
         fprintf(stderr, "%s\n", "memory allocation failed");
         return NULL;
@@ -18,7 +18,9 @@ List* str_split(const char* s, const char* delim) {
     while (*_s != '\0') {
         if (strncmp(_s, delim_start, delim_len) == 0) {
             _s += delim_len;
-        } else {
+        } 
+        
+        else {
             char* start = _s;
             while (*_s != '\0' && strncmp(_s, delim_start, delim_len) != 0) {
                 _s++;
@@ -32,7 +34,7 @@ List* str_split(const char* s, const char* delim) {
             }
             strncpy(token, start, len);
             token[len] = '\0';
-            push_back(list, token); // Добавляем токен в список
+            push_back(list, token);
         }
     }
 

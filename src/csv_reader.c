@@ -2,7 +2,7 @@
 #include "../include/str_split.h"
 
 void csv_reader(Table *table, char *db_name) {
-    char filepath[1024];
+    char filepath[256];
     snprintf(filepath, sizeof(filepath), "%s/%s/1.csv", db_name, table->table_name);
 
     FILE *file = fopen(filepath, "r");
@@ -15,10 +15,10 @@ void csv_reader(Table *table, char *db_name) {
 
         line[strcspn(line, "\n")] = '\0';
 
-        List *values = str_split(line, ",");
-        add_data_to_table(table, values);
+        List *vals = str_split(line, ",");
+        add_data_to_table(table, vals);
 
-        free_list(values);
+        free_list(vals);
     }
 
     fclose(file);

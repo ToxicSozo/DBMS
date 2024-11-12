@@ -4,7 +4,7 @@
 
 #include "../include/list.h"
 
-extern List *new_list() {
+List *new_list() {
     List *list = (List*)malloc(sizeof(List));
     if (list == NULL) {
         fprintf(stderr, "%s\n", "memory allocation failed");
@@ -18,7 +18,7 @@ extern List *new_list() {
     return list;
 }
 
-extern void free_list(List *list) {
+void free_list(List *list) {
     if (list == NULL) {
         return;
     }
@@ -28,7 +28,7 @@ extern void free_list(List *list) {
 
     while (current != NULL) {
         next = current->next;
-        free(current->string);
+        free(current->data);
         free(current);
         current = next;
     }
@@ -36,7 +36,7 @@ extern void free_list(List *list) {
     free(list);
 }
 
-extern void push_back(List *list, uint8_t *string) {
+void push_back(List *list, void *data) {
     if (list == NULL) {
         fprintf(stderr, "%s\n", "list is null");
         return;
@@ -48,7 +48,7 @@ extern void push_back(List *list, uint8_t *string) {
         return;
     }
 
-    new_node->string = strdup(string);
+    new_node->data = data;
     new_node->next = NULL;
 
     if (list->tail == NULL) {
@@ -59,10 +59,10 @@ extern void push_back(List *list, uint8_t *string) {
         list->tail = new_node;
     }
 
-    list->size++; // Увеличиваем размер списка
+    list->size++;
 }
 
-extern void push_front(List *list, uint8_t *string) {
+void push_front(List *list, void *data) {
     if (list == NULL) {
         fprintf(stderr, "%s\n", "list is null");
         return;
@@ -74,7 +74,7 @@ extern void push_front(List *list, uint8_t *string) {
         return;
     }
 
-    new_node->string = strdup(string);
+    new_node->data = data;
     new_node->next = list->head;
 
     if (list->head == NULL) {
@@ -87,7 +87,7 @@ extern void push_front(List *list, uint8_t *string) {
     list->size++;
 }
 
-extern void pop_front(List *list) {
+void pop_front(List *list) {
     if (list == NULL || list->head == NULL) {
         fprintf(stderr, "List is empty, nothing to pop\n");
         return;
@@ -95,7 +95,7 @@ extern void pop_front(List *list) {
 
     Node *old_head = list->head;
     list->head = list->head->next;
-    free(old_head->string);
+    free(old_head->data);
     free(old_head);
 
     if (list->head == NULL) {
@@ -105,7 +105,7 @@ extern void pop_front(List *list) {
     list->size--;
 }
 
-extern bool elemin_list(List *list, uint8_t *string) {
+bool elemin_list(List *list, void *data) {
     if (list == NULL || list->head == NULL) {
         fprintf(stderr, "%s\n", "list is null or empty");
         return false;
@@ -113,7 +113,7 @@ extern bool elemin_list(List *list, uint8_t *string) {
 
     Node *current = list->head;
     while (current != NULL) {
-        if (strcmp((char*)current->string, (char*)string) == 0) {
+        if (current->data == data) {
             return true;
         }
         current = current->next;
@@ -122,7 +122,7 @@ extern bool elemin_list(List *list, uint8_t *string) {
     return false;
 }
 
-extern void remove_by_value(List *list, uint8_t *string) {
+void remove_by_value(List *list, void *data) {
     if (list == NULL || list->head == NULL) {
         fprintf(stderr, "List is empty, nothing to remove\n");
         return;
@@ -132,8 +132,8 @@ extern void remove_by_value(List *list, uint8_t *string) {
     Node *previous = NULL;
 
     while (current != NULL) {
-        if (strcmp((char*)current->string, (char*)string) == 0) {
-            if (previous == NULL) { // Если удаляем голову списка
+        if (current->data == data) {
+            if (previous == NULL) {
                 list->head = current->next;
                 if (list->head == NULL) {
                     list->tail = NULL;
@@ -144,7 +144,7 @@ extern void remove_by_value(List *list, uint8_t *string) {
                     list->tail = previous;
                 }
             }
-            free(current->string);
+            free(current->data);
             free(current);
             list->size--;
             return;
@@ -156,31 +156,9 @@ extern void remove_by_value(List *list, uint8_t *string) {
     fprintf(stderr, "Value not found in the list\n");
 }
 
-extern void print_list(List *list) {
-    if (list == NULL || list->head == NULL) {
-        printf("[ ]\n");
-        return;
-    }
-
-    printf("[ ");
-    Node *current = list->head;
-    while (current != NULL) {
-        printf("'%s' ", current->string);
-        current = current->next;
-    }
-    printf("]\n");
-}
-
-extern size_t size(List *list) {
-    if (list == NULL) {
-        return 0;
-    }
-    return list->size;
-}
-
-extern uint8_t *get_element_at(List *list, size_t index) {
+void *get_element_at(List *list, size_t index) {
     if (list == NULL || index >= list->size) {
-        fprintf(stderr, "Index out of bounds\n");
+        fprintf(stderr, "Index out of bounds: %zu\n", index);
         return NULL;
     }
 
@@ -189,5 +167,20 @@ extern uint8_t *get_element_at(List *list, size_t index) {
         current = current->next;
     }
 
-    return current->string;
+    return current->data;
+}
+
+void print_list(List *list) {
+    if (list == NULL || list->head == NULL) {
+        printf("[ ]\n");
+        return;
+    }
+
+    printf("[ ");
+    Node *current = list->head;
+    while (current != NULL) {
+        printf("'%s' ", (char*)current->data);
+        current = current->next;
+    }
+    printf("]\n");
 }
