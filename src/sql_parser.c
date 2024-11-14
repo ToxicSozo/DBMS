@@ -53,7 +53,84 @@ static SQLParsedCommand* parse_insert(SQLParsedCommand *parsed_command, List *to
 }
 
 static SQLParsedCommand* parse_delete(List *tokens) {
+    if (tokens->size < 3 || strcmp((char*)get_element_at(tokens, 1), "FROM") != 0) {
+        printf("Invalid DELETE command syntax!\n");
+        return NULL;
+    }
+
+    SQLParsedCommand *parsed_command = malloc(sizeof(SQLParsedCommand));
+    if (!parsed_command) {
+        fprintf(stderr, "Memory allocation error.\n");
+        return NULL;
+    }
+
+    parsed_command->command_type = 1;
+    DeleteCommand *delete_cmd = &parsed_command->command_data.delete_data;
+
+    delete_cmd->table_name = strdup((char*)get_element_at(tokens, 2));
+    if (!delete_cmd->table_name) {
+        fprintf(stderr, "Memory allocation error.\n");
+        free(parsed_command);
+        return NULL;
+    }
+
+    if (tokens->size > 3 && strcmp((char*)get_element_at(tokens, 3), "WHERE") == 0) {
+        int condition_length = 0;
+        for (size_t i = 4; i < tokens->size; i++) {
+            condition_length += strlen((char*)get_element_at(tokens, i)) + 1;
+        }
+
+        delete_cmd->condition = malloc(condition_length);
+        if (!delete_cmd->condition) {
+            fprintf(stderr, "Memory allocation error.\n");
+            free(delete_cmd->table_name);
+            free(parsed_command);
+            return NULL;
+        }
+
+        delete_cmd->condition[0] = '\0';
+        for (size_t i = 4; i < tokens->size; i++) {
+            strcat(delete_cmd->condition, (char*)get_element_at(tokens, i));
+            if (i < tokens->size - 1) {
+                strcat(delete_cmd->condition, " ");
+            }
+        }
+    } 
+    
+    else {
+        delete_cmd->condition = NULL;
+    }
+
+    return parsed_command;
 }
 
 static SQLParsedCommand* parse_select(List *tokens) {
+    if(tokens->size < 3 || !(elemin_list(tokens, "FROM"))) {
+        printf("Invalid SELECT command syntax!\n");
+        return NULL;
+    }
+
+    size_t i = 1;
+    while (i < tokens->size && strcmp((char*)get_element_at(tokens, i), "FROM") != 0) {
+        char *col = strdup((char*)get_element_at(tokens, i));
+        
+        size_t len = strlen(col);
+        if (col[len - 1] == ',') {
+            col[len - 1] = '\0';
+        }
+        push_back(cols, col);
+        i++;
+    }
+    i++;
+
+    while (i < tokens->size && strcmp((char*)get_element_at(tokens, i), "WHERE") != 0) {
+        char *table = strdup((char*)get_element_at(tokens, i));
+        
+        size_t len = strlen(table);
+        if (table[len - 1] == ',') {
+            table[len - 1] = '\0';
+        }
+        push_back(tables, table);
+        i++;
+    }
 }
