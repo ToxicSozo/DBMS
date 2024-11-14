@@ -3,25 +3,14 @@
 
 #include "list.h"
 
-typedef struct {
-    char *table_name;
+typedef struct SQLParsedCommand {
+    List *tables;
+    List *columns;
     List *values;
-    int value_count;
-} InsertCommand;
-
-typedef struct {
-    char *table_name;
-    char *condition;
-} DeleteCommand;
-
-typedef struct {
-    union {
-        InsertCommand insert_data;
-        DeleteCommand delete_data;
-    } command_data;
-    int command_type; 
+    uint8_t *condition;
 } SQLParsedCommand;
 
+SQLParsedCommand* new_sql_parsed_command();
 void free_parsed_command(SQLParsedCommand *parsed_command);
 
 #endif
