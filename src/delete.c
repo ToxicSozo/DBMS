@@ -23,14 +23,14 @@ bool evaluate_condition(Table *table, char *condition, List *row_data) {
 }
 
 void delete(DataBase *db, SQLParsedCommand *parsed_command) {
-    Table *table = get_table(db, parsed_command->command_data.delete_data.table_name);
+    Table *table = get_table(db, get_element_at(parsed_command->tables, 0));
     if (!table) {
-        printf("Table '%s' not found!\n", parsed_command->command_data.delete_data.table_name);
+        printf("Table '%s' notfound!\n", get_element_at(parsed_command->tables, 0));
         return;
     }
 
-    if (parsed_command->command_data.delete_data.condition) {
-        List *and_condition = str_split(parsed_command->command_data.delete_data.condition, " AND ");
+    if (parsed_command->condition) {
+        List *and_condition = str_split(parsed_command->condition, " AND ");
 
         csv_reader(table, db->name);
         for (size_t i = 0; i < table->row_count; i++) {

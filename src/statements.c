@@ -25,6 +25,7 @@ void execute_statement(DataBase *db, Statement *statement, SQLParsedCommand *par
             insert(db, parsed_comand);
             break;
         case (STATEMENT_SELECT):
+            Select(db, parsed_comand);
             break;
         case (STATEMENT_DELETE):
             delete(db, parsed_comand);
