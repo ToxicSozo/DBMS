@@ -183,7 +183,6 @@ void remove_by_value(List *list, uint8_t *string) {
 
 uint8_t *get_element_at(List *list, size_t index) {
     if (list == NULL || index >= list->size) {
-        fprintf(stderr, "Index out of bounds: %zu\n", index);
         return NULL;
     }
 
