@@ -1,4 +1,4 @@
-package json
+package jsonparser
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"github.com/Hollywood-Kid/DBMS/internal/static/resources"
 )
 
-func parseJSON(filePath string) (resources.Schema, error) {
+func ParseJSON(filePath string) (resources.Schema, error) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return resources.Schema{}, fmt.Errorf("ошибка при чтении файла: %v", err)
