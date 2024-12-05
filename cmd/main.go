@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Hollywood-Kid/DBMS/internal/data_structures/database"
 	"github.com/Hollywood-Kid/DBMS/internal/inputbuffer"
 	"github.com/Hollywood-Kid/DBMS/internal/lib/jsonparser"
 	"github.com/Hollywood-Kid/DBMS/internal/lib/sqlparser"
+	"github.com/Hollywood-Kid/DBMS/internal/lib/utils/builfilesistem"
 	"github.com/Hollywood-Kid/DBMS/internal/meta"
 )
 
@@ -18,8 +18,11 @@ func main() {
 		return
 	}
 
-	db := database.NewDatabase(schema.Name, schema.TuplesLimit)
-	db.PrintDatabase()
+	if err := builfilesistem.BuildFileSystem(schema); err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("File system built successfully.")
+	}
 
 	inputBuffer := inputbuffer.NewInputBuffer()
 
