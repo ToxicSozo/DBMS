@@ -4,20 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/Hollywood-Kid/DBMS/internal/static/resources"
 )
 
-func parseJSON(filePath string) (Schema, error) {
-	// Чтение файла
+func parseJSON(filePath string) (resources.Schema, error) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		return Schema{}, fmt.Errorf("ошибка при чтении файла: %v", err)
+		return resources.Schema{}, fmt.Errorf("ошибка при чтении файла: %v", err)
 	}
 
-	// Десериализация JSON в структуру
-	var schema Schema
+	var schema resources.Schema
 	err = json.Unmarshal(data, &schema)
 	if err != nil {
-		return Schema{}, fmt.Errorf("ошибка при десериализации JSON: %v", err)
+		return resources.Schema{}, fmt.Errorf("ошибка при десериализации JSON: %v", err)
 	}
 
 	return schema, nil

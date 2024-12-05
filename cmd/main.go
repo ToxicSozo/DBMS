@@ -4,19 +4,24 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Hollywood-Kid/DBMS/internal/data_structures/hmap"
 	"github.com/Hollywood-Kid/DBMS/internal/inputbuffer"
 	"github.com/Hollywood-Kid/DBMS/internal/meta"
 )
 
 func main() {
-	hm := hmap.NewHashMap()
+	schema, err := json.parseJSON("scheme.json")
+	if err != nil {
+		fmt.Println("Ошибка при парсинге JSON:", err)
+		return
+	}
 
-	hm.Insert("key1", "value1")
-	hm.Insert(42, "value2")
-	hm.Insert(3.14, "value3")
+	// Выводим полученную структуру
+	fmt.Println("Schema Name:", schema.Name)
+	fmt.Println("Tuples Limit:", schema.TuplesLimit)
 
-	hm.Print()
+	// Пример работы с хэш-таблицей
+	tables := schema.Structure.Get("таблица1")
+	fmt.Println("Columns in таблица1:", tables)
 
 	databaseName := "MyDatabase"
 	inputBuffer := inputbuffer.NewInputBuffer()
