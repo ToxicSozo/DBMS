@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Hollywood-Kid/DBMS/internal/data_structures/database"
 	"github.com/Hollywood-Kid/DBMS/internal/inputbuffer"
 	"github.com/Hollywood-Kid/DBMS/internal/lib/jsonparser"
 	"github.com/Hollywood-Kid/DBMS/internal/lib/sqlparser"
@@ -12,14 +13,13 @@ import (
 
 func main() {
 	schema, err := jsonparser.ParseJSON("/home/kid/Desktop/DBMS/scheme.json")
-
 	if err != nil {
 		fmt.Println("Ошибка при парсинге JSON:", err)
 		return
 	}
 
-	tables := schema.Structure
-	tables.Print()
+	db := database.NewDatabase(schema.Name, schema.TuplesLimit)
+	db.PrintDatabase()
 
 	inputBuffer := inputbuffer.NewInputBuffer()
 

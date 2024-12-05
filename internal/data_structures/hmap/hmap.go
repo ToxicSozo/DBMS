@@ -97,6 +97,18 @@ func (h *HashMap) expand() {
 	h.buckets = newBuckets
 }
 
+// ForEach выполняет функцию-обработчик для каждой пары ключ-значение в хэш-таблице.
+func (h *HashMap) ForEach(handler func(key, value interface{})) {
+	for _, bucket := range h.buckets {
+		if bucket == nil {
+			continue
+		}
+		for _, entry := range bucket.entries {
+			handler(entry.key, entry.value)
+		}
+	}
+}
+
 // Print выводит содержимое хэш-таблицы.
 func (h *HashMap) Print() {
 	for i, bucket := range h.buckets {
