@@ -4,11 +4,20 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Hollywood-Kid/DBMS/internal/data_structures/hmap"
 	"github.com/Hollywood-Kid/DBMS/internal/inputbuffer"
 	"github.com/Hollywood-Kid/DBMS/internal/meta"
 )
 
 func main() {
+	hm := hmap.NewHashMap()
+
+	hm.Insert("key1", "value1")
+	hm.Insert(42, "value2")
+	hm.Insert(3.14, "value3")
+
+	hm.Print()
+
 	databaseName := "MyDatabase"
 	inputBuffer := inputbuffer.NewInputBuffer()
 

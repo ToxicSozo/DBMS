@@ -1,4 +1,4 @@
-package hmap
+package hasher
 
 import (
 	"encoding/json"

@@ -3,7 +3,7 @@ package hmap
 import (
 	"fmt"
 
-	"github.com/Hollywood-Kid/DBMS/internal/data_structures/hmap"
+	"github.com/Hollywood-Kid/DBMS/internal/data_structures/hmap/hasher"
 )
 
 type HashMap struct {
@@ -22,7 +22,7 @@ func NewHashMap() *HashMap {
 
 // getBucketIndex вычисляет индекс бакета по ключу.
 func (h *HashMap) getBucketIndex(key interface{}) int {
-	hash := hmap.GetHash(key)
+	hash := hasher.GetHash(key)
 
 	return int(hash % uint64(len((h.buckets))))
 }
@@ -86,7 +86,7 @@ func (h *HashMap) expand() {
 			continue
 		}
 		for _, entry := range bucket.entries {
-			newIndex := hmap.GetHash(entry.key) % uint64(len(newBuckets))
+			newIndex := hasher.GetHash(entry.key) % uint64(len(newBuckets))
 			if newBuckets[newIndex] == nil {
 				newBuckets[newIndex] = NewBucket()
 			}
