@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include <string.h>
 
-PrepareResult prepare_statement(InputBuffer *input_buffer, Statement *statement) {
-    if (strncmp(input_buffer->buffer, "INSERT", 6) == 0) {
+PrepareResult prepare_statement(char *buffer, Statement *statement) {
+    if (strncmp(buffer, "INSERT", 6) == 0) {
         statement->type = STATEMENT_INSERT;
         return PREPARE_SUCCESS;
-    } else if (strncmp(input_buffer->buffer, "SELECT", 6) == 0) {
+    } else if (strncmp(buffer, "SELECT", 6) == 0) {
         statement->type = STATEMENT_SELECT;
         return PREPARE_SUCCESS;
-    } else if (strncmp(input_buffer->buffer, "DELETE", 6) == 0) {
+    } else if (strncmp(buffer, "DELETE", 6) == 0) {
         statement->type = STATEMENT_DELETE;
         return PREPARE_SUCCESS;
     }
@@ -25,10 +25,10 @@ void execute_statement(DataBase *db, Statement *statement, SQLParsedCommand *par
             insert(db, parsed_comand);
             break;
         case (STATEMENT_SELECT):
-            Select(db, parsed_comand);
+            // Select(db, parsed_comand);
             break;
         case (STATEMENT_DELETE):
-            delete(db, parsed_comand);
+            // delete(db, parsed_comand);
             break;
     }
 }

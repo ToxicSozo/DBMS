@@ -19,7 +19,7 @@ typedef struct {
     StatementType type;
 } Statement;
 
-PrepareResult prepare_statement(InputBuffer *input_buffer, Statement *statement);
+PrepareResult prepare_statement(char *buffer, Statement *statement);
 void execute_statement(DataBase *db, Statement *statement, SQLParsedCommand *pars_command);
 
 #endif
