@@ -7,6 +7,8 @@
 #include "../include/str_split.h"
 
 bool evaluate_condition(Table *table, char *condition, List *row_data) {
+    bool result = false;
+    
     List *col_and_var = str_split(condition, " = ");
 
     if (col_and_var->size < 2) {
@@ -14,11 +16,24 @@ bool evaluate_condition(Table *table, char *condition, List *row_data) {
         return false;
     }
 
-    size_t idx = get_column_index(table, (char*)get_element_at(col_and_var, 0));
+    char *value = (char *)get_element_at(col_and_var, 1);
+    size_t len = strlen(value);
+    bool has_quotes = len >= 2 && ((value[0] == '\'' && value[len - 1] == '\'') || (value[0] == '\"' && value[len - 1] == '\"'));
 
-    bool result = (idx != (size_t)-1 && strcmp((char*)get_element_at(row_data, idx), (char*)get_element_at(col_and_var, 1)) == 0);
+    if (has_quotes) {
+        size_t idx = get_column_index(table, (char*)get_element_at(col_and_var, 0));
+        result = (idx != (size_t)-1 && strcmp((char*)get_element_at(row_data, idx), value) == 0);
+    } else {
+        size_t idx = get_column_index(table, (char*)get_element_at(col_and_var, 0));
+        size_t idx2 = get_column_index(table, (char*)get_element_at(col_and_var, 1));
+
+        if (idx != (size_t)-1 && idx2 != (size_t)-1) {
+            result = strcmp((char*)get_element_at(row_data, idx), (char*)get_element_at(row_data, idx2)) == 0;
+        }
+    }
 
     free_list(col_and_var);
+
     return result;
 }
 
