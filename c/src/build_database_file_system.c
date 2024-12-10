@@ -6,6 +6,10 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 // Функция для создания директории
 int create_directory(const char* path) {
@@ -81,5 +85,35 @@ void build_database_file_system(DataBase *schema) {
         if (create_csv_file(table_path, schema->tables[i].columns, schema->tables[i].column_count) == -1) {
             continue;
         }
+    }
+}
+
+bool lock_table(const char *db_path, const char *table_name) {
+    char lock_file[256];
+    snprintf(lock_file, sizeof(lock_file), "%s/%s/%s_lock", db_path, table_name, table_name);
+
+    int fd = open(lock_file, O_CREAT | O_EXCL, 0600); // Создать файл блокировки
+    if (fd == -1) {
+        if (errno == EEXIST) {
+            printf("Таблица '%s' уже заблокирована другим клиентом.\n", table_name);
+        } else {
+            perror("Ошибка при создании файла блокировки");
+        }
+        return false;
+    }
+
+    close(fd);
+    printf("Таблица '%s' успешно заблокирована. Файл: %s\n", table_name, lock_file);
+    return true;
+}
+
+void unlock_table(const char *db_path, const char *table_name) {
+    char lock_file[256];
+    snprintf(lock_file, sizeof(lock_file), "%s/%s/%s_lock", db_path, table_name, table_name);
+
+    if (unlink(lock_file) == -1) {
+        perror("Ошибка при удалении файла блокировки");
+    } else {
+        printf("Таблица '%s' успешно разблокирована. Файл: %s\n", table_name, lock_file);
     }
 }
