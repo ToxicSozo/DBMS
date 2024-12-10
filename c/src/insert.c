@@ -11,12 +11,7 @@ void insert(DataBase *db, SQLParsedCommand *parsed_command) {
         printf("Table '%s' notfound!\n", get_element_at(parsed_command->tables, 0));
         return;
     }
-
-    if (parsed_command->values->size != table->column_count) {
-        printf("Incorrect number of values provided for table '%s'.\n", get_element_at(parsed_command->tables, 0));
-        return;
-    }
-
+    
     csv_reader(table, db->name);
     add_data_to_table(table, parsed_command->values);
     csv_write(table, db->name);
