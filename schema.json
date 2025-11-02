@@ -1,0 +1,8 @@
+{
+  "name": "Example Schema",
+  "tuples_limit": 1000,
+  "structure": {
+    "users": ["name", "email"],
+    "orders": ["user_id", "total"]
+  }
+}
